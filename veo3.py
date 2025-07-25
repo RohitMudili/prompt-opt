@@ -36,7 +36,7 @@ def initialize_gemini():
     
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         # Test the connection
         response = model.generate_content("Hello")
         return model
@@ -76,7 +76,7 @@ def main():
         # Model selection
         model_name = st.selectbox(
             "Model",
-            ["gemini-1.5-flash", "gemini-1.5-pro"],
+            ["gemini-2.5-flash", "gemini-1.5-pro"],
             index=0
         )
         
@@ -86,54 +86,35 @@ def main():
             st.rerun()
     
     # Main chat interface
-    col1, col2 = st.columns([2, 1])
+    st.header("💬 Chat Interface")
     
-    with col1:
-        st.header("💬 Chat Interface")
-        
-        # Chat input
-        user_input = st.text_area(
-            "Enter your message:",
-            height=100,
-            placeholder="Create a prompt for a mysterious forest scene..."
-        )
-        
-        # Send button
-        if st.button("🚀 Send", type="primary"):
-            if user_input.strip():
-                # Add user message to history
-                st.session_state.chat_history.append({
-                    "role": "user",
-                    "content": user_input
-                })
-                
-                # Get response from Gemini
-                with st.spinner("Generating response..."):
-                    response = chat_with_gemini(model, system_prompt, user_input)
-                
-                # Add assistant response to history
-                st.session_state.chat_history.append({
-                    "role": "assistant",
-                    "content": response
-                })
-                
-                st.rerun()
+    # Chat input
+    user_input = st.text_area(
+        "Enter your message:",
+        height=100,
+        placeholder="Create a prompt for a mysterious forest scene..."
+    )
     
-    with col2:
-        st.header("📋 Quick Examples")
-        
-        example_prompts = [
-            "Create a prompt for a mysterious forest scene",
-            "Generate a cinematic prompt for a city at night",
-            "Write a prompt for a peaceful beach sunset",
-            "Create a prompt for a futuristic robot in a laboratory",
-            "Generate a prompt for a magical library with floating books"
-        ]
-        
-        for i, example in enumerate(example_prompts):
-            if st.button(f"Example {i+1}", key=f"example_{i}"):
-                st.session_state.example_text = example
-                st.rerun()
+    # Send button
+    if st.button("🚀 Send", type="primary"):
+        if user_input.strip():
+            # Add user message to history
+            st.session_state.chat_history.append({
+                "role": "user",
+                "content": user_input
+            })
+            
+            # Get response from Gemini
+            with st.spinner("Generating response..."):
+                response = chat_with_gemini(model, system_prompt, user_input)
+            
+            # Add assistant response to history
+            st.session_state.chat_history.append({
+                "role": "assistant",
+                "content": response
+            })
+            
+            st.rerun()
     
     # Display chat history
     if st.session_state.chat_history:
@@ -148,11 +129,7 @@ def main():
                 with st.chat_message("assistant"):
                     st.write(message["content"])
     
-    # Display example text if selected
-    if hasattr(st.session_state, 'example_text'):
-        st.markdown("---")
-        st.info(f"💡 Example: {st.session_state.example_text}")
-        del st.session_state.example_text
+
 
 if __name__ == "__main__":
     main() 
