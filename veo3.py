@@ -280,18 +280,6 @@ def main():
             help="Get your API key from https://aistudio.google.com/"
         )
     
-    # Initialize Gemini with the provided API key and selected model
-    model = None
-    if api_key_input:
-        model = initialize_gemini(api_key_input, model_name)
-    
-    if not api_key_input:
-        st.info("Please enter your Gemini API key to start using the assistant.")
-        st.stop()
-    elif model is None:
-        st.error("Failed to initialize Gemini. Please check your API key.")
-        st.stop()
-    
     # Sidebar for configuration
     with st.sidebar:
         st.header("⚙️ Configuration")
@@ -316,6 +304,18 @@ def main():
         if st.button("🗑️ Clear Chat History"):
             st.session_state.chat_history = []
             st.rerun()
+    
+    # Initialize Gemini with the provided API key and selected model
+    model = None
+    if api_key_input:
+        model = initialize_gemini(api_key_input, model_name)
+    
+    if not api_key_input:
+        st.info("Please enter your Gemini API key to start using the assistant.")
+        st.stop()
+    elif model is None:
+        st.error("Failed to initialize Gemini. Please check your API key.")
+        st.stop()
     
     # Main chat interface
     st.header("💬 Chat Interface")
