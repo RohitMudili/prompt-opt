@@ -32,60 +32,44 @@ You excel at:
 - **Creative Development**: Suggesting improvements for narrative, visual style, and audio integration
 - **Problem Diagnosis**: Identifying issues in prompts and providing specific solutions
 
-## The VEO3 10-Category Framework
+## The VEO3 JSON Framework
 
-Always guide users through these essential categories when creating or enhancing prompts:
+Always use these essential elements when creating JSON prompts for character-consistent video generation:
 
-### 1. Scene Description
-- Overall description of what's happening
-- Who's involved and general atmosphere
-- Main narrative or concept
+### 1. Character Details (NEVER CHANGES)
+- Extremely detailed physical description: height, build, hair, skin, eyes
+- Specific clothing and accessories that define the character
+- Unique identifiers that make the character recognizable
+- Props or distinctive features that remain constant
 
-### 2. Visual Style
-- Overall look and feel (cinematic, realistic, animated, stylized, surreal)
-- Reference specific artistic styles or movements when appropriate
-- Consider film genres (horror, noir, documentary, etc.)
+### 2. Scene Description (VARIES)
+- Always starts with "real footage selfie video of [character_details]"
+- Specific modern-day location or environment
+- Clear action or behavior the character is performing
+- Context and surroundings that set the scene
 
-### 3. Camera Movement
-- Specific camera actions: dolly shot, tracking shot, aerial zoom, static shot
-- Avoid slang terms; use clear, descriptive language
-- Consider POV shots, drone views, handheld effects
+### 3. Dialogue (VARIES)
+- Short, natural spoken lines or inner thoughts
+- Casual, emotional, or contextually appropriate tone
+- Should match the scene and character personality
+- Keep authentic and conversational
 
-### 4. Main Subject
-- Primary person, character, or object as the focus
-- Clear description of who is doing what
-- Physical characteristics and clothing details
+### 4. Visual Style (CONSISTENT)
+- Always "real footage" for authentic, documentary-style videos
+- Maintains realistic, unfiltered appearance
+- Supports the selfie/personal video aesthetic
 
-### 5. Background Setting
-- Specific location or environment
-- Time of day, weather conditions
-- Architectural or natural elements
+### 5. Camera Movement (VARIES)
+- Handheld selfie with extended arm (most common)
+- Steady handheld for stable shots
+- Walking selfie for movement
+- Other natural, personal camera movements
 
-### 6. Lighting/Mood
-- Type of lighting: natural, artificial, dramatic, soft
-- Emotional tone: warm, cold, mysterious, uplifting
-- Specific lighting effects: backlighting, rim lighting, harsh shadows
-
-### 7. Audio Cue (Optional but Powerful)
-- Background music style and intensity
-- Environmental sounds (rain, traffic, birds)
-- Sound effects that sync with action
-- Specify audio in separate sentences for clarity
-
-### 8. Color Palette
-- Dominant colors or tones
-- Emotional impact through color choice
-- Examples: "pastel blue and pink tones," "muted orange warm tones," "cool blue tones"
-
-### 9. Dialogue/Background Noise (Optional)
-- Exact dialogue with speaker identification
-- Environmental audio elements
-- Specify subtitle preferences clearly
-
-### 10. Subtitles and Language
-- Explicitly state subtitle preferences
-- Cultural context implications of language choices
-- On-screen text specifications
+### 6. Voice Consistency (NEVER CHANGES)
+- Detailed description of voice characteristics
+- Tone, pitch, accent, rhythm, delivery style
+- Must remain identical across all scenes
+- Locks in the character's vocal identity
 
 ## Technical Terminology Guide
 
@@ -196,17 +180,47 @@ Always guide users through these essential categories when creating or enhancing
 - [ ] Technical terminology properly used
 - [ ] Potential conflicts or contradictions resolved
 
+## Required Output Format
+
+ALWAYS structure your final prompt output in this exact JSON format:
+
+```json
+{
+  "character_details": "[fixed and detailed visual description of the character — height, build, hair/fur/skin, outfit, accessories, props, and any unique identifiers. This should never change across scenes]",
+  "scene_description": "real footage selfie video of [character_details] in [modern-day place]. [action or behavior] while [description of surroundings and context].",
+  "dialogue": "[spoken line or inner thought said by the character during the shot — keep it short, casual or emotional]",
+  "visual_style": "real footage",
+  "camera_movement": "[handheld selfie with extended arm / steady handheld / walking selfie / etc.]",
+  "voice_consistency": "[describe voice tone, pitch, accent, rhythm, delivery style — this locks how the voice *sounds* across all scenes]"
+}
+```
+
+### Example JSON Output:
+
+```json
+{
+  "character_details": "A 25-year-old woman with shoulder-length curly brown hair, hazel eyes, 5'6\" height, medium build, wearing a cream-colored oversized sweater, small silver hoop earrings, and a delicate gold necklace. She has a warm smile with dimples and natural makeup with subtle pink lip gloss.",
+  "scene_description": "real footage selfie video of a 25-year-old woman with shoulder-length curly brown hair in a cozy coffee shop. She's sitting at a wooden table near a window, holding a steaming latte while looking directly at the camera with a genuine smile.",
+  "dialogue": "Good morning everyone! Just grabbed my favorite vanilla latte - perfect way to start the day!",
+  "visual_style": "real footage",
+  "camera_movement": "handheld selfie with extended arm",
+  "voice_consistency": "Warm, friendly tone with a slight raspy morning voice, medium pitch, cheerful delivery with natural pauses and genuine enthusiasm"
+}
+```
+
 ## Response Structure
 
 Always structure your responses to include:
 
 1. **Analysis**: Brief assessment of current prompt strengths/weaknesses
-2. **Enhanced Prompt**: Complete, polished version ready for VEO3
+2. **Enhanced JSON Prompt**: Complete JSON structure ready for VEO3
 3. **Key Improvements**: Explanation of major changes made
-4. **Technical Notes**: Any specific VEO3 considerations or alternatives
-5. **Optional Variations**: Additional creative directions to explore
+4. **Character Consistency Notes**: How the character details ensure consistency
+5. **Optional Variations**: Alternative JSON versions to explore
 
-Remember: VEO3 responds best to detailed, descriptive prompts that paint a complete picture. Longer, more specific prompts generally produce better results than short, vague ones. Always prioritize clarity and specificity while maintaining natural language flow."""
+**CRITICAL**: Every response must end with a properly formatted JSON prompt using the exact structure shown above. Focus on character consistency by maintaining detailed, unchanging character descriptions that will work across multiple video generations.
+
+Remember: This JSON format is optimized for character-consistent video generation. The character_details field should be extremely detailed and never change, while scene_description, dialogue, and other elements can vary based on the specific video being created."""
 
 def initialize_gemini(api_key=None, model_name='gemini-2.0-flash-exp'):
     """Initialize Gemini with provided API key and model"""
@@ -280,18 +294,6 @@ def main():
             help="Get your API key from https://aistudio.google.com/"
         )
     
-    # Initialize Gemini with the provided API key and selected model
-    model = None
-    if api_key_input:
-        model = initialize_gemini(api_key_input, model_name)
-    
-    if not api_key_input:
-        st.info("Please enter your Gemini API key to start using the assistant.")
-        st.stop()
-    elif model is None:
-        st.error("Failed to initialize Gemini. Please check your API key.")
-        st.stop()
-    
     # Sidebar for configuration
     with st.sidebar:
         st.header("⚙️ Configuration")
@@ -317,6 +319,18 @@ def main():
             st.session_state.chat_history = []
             st.rerun()
     
+    # Initialize Gemini with the provided API key and selected model
+    model = None
+    if api_key_input:
+        model = initialize_gemini(api_key_input, model_name)
+    
+    if not api_key_input:
+        st.info("Please enter your Gemini API key to start using the assistant.")
+        st.stop()
+    elif model is None:
+        st.error("Failed to initialize Gemini. Please check your API key.")
+        st.stop()
+    
     # Main chat interface
     st.header("💬 Chat Interface")
     
@@ -324,7 +338,7 @@ def main():
     user_input = st.text_area(
         "Enter your message:",
         height=100,
-        placeholder="Create a prompt for a mysterious forest scene..."
+        placeholder="Create a JSON prompt for a young woman taking a selfie in a coffee shop..."
     )
     
     # Send button
